@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-box">
+      <div class="logo">💰 Expense Tracker</div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('login', this)">Login</button>
+        <button class="tab" onclick="showTab('register', this)">Register</button>
+      </div>
+
+      <!-- Login -->
+      <div id="loginForm">
+        <input type="email"    id="loginEmail"    placeholder="📧 Email"    />
+        <input type="password" id="loginPassword" placeholder="🔒 Password" />
+        <button class="btn-primary" onclick="login()">Login</button>
+        <p id="loginMsg"></p>
+      </div>
+
+      <!-- Register -->
+      <div id="registerForm" style="display:none">
+        <input type="text"     id="regName"     placeholder="👤 Username" />
+        <input type="email"    id="regEmail"    placeholder="📧 Email"    />
+        <input type="password" id="regPassword" placeholder="🔒 Password" />
+        <button class="btn-primary" onclick="register()">Register</button>
+        <p id="registerMsg"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
