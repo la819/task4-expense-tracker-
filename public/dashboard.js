@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000';
+const API = 'task4-expense-tracker-production.up.railway.app';
 let editingId = null;
 
 // Check login
