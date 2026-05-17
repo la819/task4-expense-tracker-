@@ -6,13 +6,19 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// CORS Fix
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -23,8 +29,6 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 .then(() => console.log('MongoDB connected!'))
 .catch(err => console.log('DB Error:', err.message));
-
-// ===== SCHEMAS =====
 
 // User Schema
 const userSchema = new mongoose.Schema({
@@ -47,7 +51,7 @@ const expenseSchema = new mongoose.Schema({
 const User    = mongoose.model('User', userSchema);
 const Expense = mongoose.model('Expense', expenseSchema);
 
-// ===== MIDDLEWARE =====
+// Middleware
 const verifyToken = (req, res, next) => {
   const token = req.headers['authorization'];
   if (!token) return res.status(401).json({ error: 'No token!' });
@@ -59,8 +63,6 @@ const verifyToken = (req, res, next) => {
     res.status(401).json({ error: 'Invalid token!' });
   }
 };
-
-// ===== AUTH ROUTES =====
 
 // Register
 app.post('/api/register', async (req, res) => {
@@ -109,32 +111,20 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// ===== EXPENSE ROUTES =====
-
-// GET all expenses
+// GET expenses
 app.get('/api/expenses', verifyToken, async (req, res) => {
   const expenses = await Expense.find({ userId: req.user.id }).sort({ createdAt: -1 });
   res.json(expenses);
 });
 
-// GET total
-app.get('/api/expenses/total', verifyToken, async (req, res) => {
-  const expenses = await Expense.find({ userId: req.user.id });
-  const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-  res.json({ total });
-});
-
-// POST add expense
+// POST expense
 app.post('/api/expenses', verifyToken, async (req, res) => {
   try {
     const { title, amount, category, date } = req.body;
     if (!title || !amount || !category)
       return res.status(400).json({ error: 'All fields required!' });
 
-    const expense = new Expense({
-      userId: req.user.id,
-      title, amount, category, date
-    });
+    const expense = new Expense({ userId: req.user.id, title, amount, category, date });
     await expense.save();
     res.status(201).json({ message: 'Expense added!', data: expense });
   } catch (err) {
@@ -142,7 +132,7 @@ app.post('/api/expenses', verifyToken, async (req, res) => {
   }
 });
 
-// PUT update expense
+// PUT expense
 app.put('/api/expenses/:id', verifyToken, async (req, res) => {
   const { title, amount, category, date } = req.body;
   const expense = await Expense.findByIdAndUpdate(
