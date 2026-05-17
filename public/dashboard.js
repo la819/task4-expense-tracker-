@@ -1,4 +1,4 @@
-const API = 'task4-expense-tracker-production.up.railway.app';
+const API = 'https://task4-expense-tracker-production.up.railway.app';
 let editingId = null;
 
 // Check login

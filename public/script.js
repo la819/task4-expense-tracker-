@@ -1,4 +1,4 @@
-const API = 'task4-expense-tracker-production.up.railway.app';
+const API = 'https://task4-expense-tracker-production.up.railway.app';
 
 function showTab(tab, el) {
   document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
